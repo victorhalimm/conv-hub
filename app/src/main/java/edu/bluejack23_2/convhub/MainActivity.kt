@@ -3,6 +3,8 @@ package edu.bluejack23_2.convhub
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.WindowInsetsController
+import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 
@@ -13,6 +15,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Disable status bar
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
 
         // Obtain references to the layouts and text views
@@ -43,18 +48,18 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun toggleView(layout: LinearLayout, textView: TextView) {
-        if (layout == currentlyExpandedLayout) return;
-        currentlyExpandedLayout?.let {
-            it.setBackgroundResource(android.R.color.transparent)
+        if (layout == currentlyExpandedLayout) return
+
+        if (currentlyExpandedLayout != null) {
+            currentlyExpandedLayout!!.setBackgroundResource(android.R.color.transparent)
         }
-        currentlyExpandedTextView?.let {
-            it.visibility = View.GONE
+        if (currentlyExpandedTextView != null) {
+            currentlyExpandedTextView!!.visibility = View.GONE
         }
 
         textView.visibility = View.VISIBLE
         layout.setBackgroundResource(R.drawable.round_back_home)
 
-        setActiveNav(layout, textView);
-
+        setActiveNav(layout, textView)
     }
 }

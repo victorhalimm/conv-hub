@@ -26,13 +26,15 @@
             android:layout_weight="1"
             android:background="@drawable/round_back_home"
             >
+
             <ImageView
                 android:id="@+id/homeImg"
                 android:layout_width="25dp"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
+                android:background="#00FFFFFF"
                 android:src="@drawable/home_outlined_icon"
-                app:tint="@color/dark_blue"/>
+                app:tint="@color/dark_blue" />
             
             <TextView
                 android:id="@+id/homeTxt"
