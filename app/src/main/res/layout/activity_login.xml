@@ -19,6 +19,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="85dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/convhub_logo_only_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.506"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.118" />
+
         <TextView
             android:id="@+id/textView2"
             android:layout_width="311dp"
