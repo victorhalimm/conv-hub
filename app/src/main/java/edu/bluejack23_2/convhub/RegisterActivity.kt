@@ -74,10 +74,13 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this, "Username field can only consist of alphanumeric characters", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            var isUnique:Boolean = true
             firestore.collection("users").whereEqualTo("username", username).get()
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty) {
                         Toast.makeText(this, "Username is already taken", Toast.LENGTH_SHORT).show()
+                        isUnique = false
                         return@addOnSuccessListener
                     }
                 }
@@ -85,6 +88,10 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error checking username: ${e.message}", Toast.LENGTH_SHORT).show()
                     return@addOnFailureListener
                 }
+
+            if(!isUnique){
+                return@setOnClickListener
+            }
 
             if (password.length < 8 || !isPasswordValid(password)) {
                 Toast.makeText(this, "Password field must be filled", Toast.LENGTH_SHORT).show()
