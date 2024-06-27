@@ -16,19 +16,19 @@
 
     <TextView
         android:id="@+id/landingHeader"
-        android:layout_width="286dp"
-        android:layout_height="90dp"
+        android:layout_width="338dp"
+        android:layout_height="wrap_content"
         android:text="Find day-to-day jobs easily"
         android:textAlignment="center"
         android:textColor="#000000"
-        android:textSize="36sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.737" />
+        app:layout_constraintVertical_bias="0.747" />
 
     <TextView
         android:id="@+id/landingSubHeader"
@@ -36,13 +36,13 @@
         android:layout_height="wrap_content"
         android:text="We'll help you find flexible jobs that match your schedule."
         android:textAlignment="center"
-        android:textSize="16sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/carousel"
-        app:layout_constraintVertical_bias="0.814" />
+        app:layout_constraintVertical_bias="0.826" />
 
     <Button
         android:id="@+id/registerBtn"

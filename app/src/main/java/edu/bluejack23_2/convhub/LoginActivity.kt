@@ -40,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
 
             firebaseAuth.signInWithEmailAndPassword(emailText, passwordText).addOnCompleteListener{
                 if (it.isSuccessful) {
-                    val homeIntent = Intent(this, MainActivity::class.java)
+                    val homeIntent = Intent(this, HomeActivity::class.java)
                     startActivity(homeIntent);
                     return@addOnCompleteListener
                 }
