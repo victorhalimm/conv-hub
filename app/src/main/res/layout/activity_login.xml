@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:background="@drawable/bg_dark_blue"
-        android:elevation="5sp"
+        android:elevation="4sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
