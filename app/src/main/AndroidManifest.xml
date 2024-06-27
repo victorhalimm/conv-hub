@@ -20,7 +20,7 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".viewmodel.CreateTaskActivity"
+            android:name=".ui.CreateTaskActivity"
             android:exported="false" />
         <activity
             android:name=".RegisterActivity"

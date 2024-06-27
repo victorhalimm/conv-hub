@@ -1,4 +1,4 @@
-package edu.bluejack23_2.convhub.view.components.navigation
+package edu.bluejack23_2.convhub.ui.theme.navigation
 
 enum class Screens {
     HomeScreen,

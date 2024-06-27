@@ -1,4 +1,4 @@
-package edu.bluejack23_2.convhub.view.screens
+package edu.bluejack23_2.convhub.ui.theme.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

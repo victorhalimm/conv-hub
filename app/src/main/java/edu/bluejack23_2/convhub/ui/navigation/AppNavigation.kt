@@ -1,11 +1,17 @@
-package edu.bluejack23_2.convhub.view.components.navigation
+package edu.bluejack23_2.convhub.ui.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -15,9 +21,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import edu.bluejack23_2.convhub.HomeScreen
-import edu.bluejack23_2.convhub.view.screens.ActiveTaskScreen
-import edu.bluejack23_2.convhub.view.screens.ProfileScreen
-import edu.bluejack23_2.convhub.view.screens.ScheduleScreen
+import edu.bluejack23_2.convhub.ui.theme.navigation.Screens
+import edu.bluejack23_2.convhub.ui.theme.navigation.listOfNavItems
+import edu.bluejack23_2.convhub.ui.theme.screens.ActiveTaskScreen
+import edu.bluejack23_2.convhub.ui.theme.screens.ProfileScreen
+import edu.bluejack23_2.convhub.ui.theme.screens.ScheduleScreen
+import edu.bluejack23_2.convhub.ui.theme.*
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,9 +40,11 @@ fun AppNavigation() {
                 val navBackStackEntry : NavBackStackEntry? by navController.currentBackStackEntryAsState()
                 val currentDestination : NavDestination? = navBackStackEntry?.destination
 
-                listOfNavItems.forEach{navItem -> 
+                listOfNavItems.forEach{ navItem ->
+                    val isSelected = currentDestination?.hierarchy?.any {it.route == navItem.route} == true
+
                     NavigationBarItem(
-                        selected = currentDestination?.hierarchy?.any {it.route == navItem.route} == true,
+                        selected = isSelected,
                         onClick = {
                             navController.navigate(navItem.route) {
                                 popUpTo(navController.graph.startDestinationId) { saveState = true }
@@ -42,11 +53,13 @@ fun AppNavigation() {
                             }
                         },
                         icon = {
-                            Icon(imageVector = navItem.icon, contentDescription = null)
+                            Icon(imageVector = navItem.icon, contentDescription = null, modifier = Modifier.size(32.dp))
                         },
                         label = {
-                            Text(text = navItem.label)
-                        }
+                            if (isSelected) {
+                                Text(text = navItem.label)
+                            }
+                        },
 
                     )
                 }

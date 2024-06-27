@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.sp
 import edu.bluejack23_2.convhub.viewmodel.HomeState
 
 
+
+@Preview
 @Composable
 fun HomeScreen(
 ) {

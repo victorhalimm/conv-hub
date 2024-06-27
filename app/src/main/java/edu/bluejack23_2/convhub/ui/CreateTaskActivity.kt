@@ -1,4 +1,4 @@
-package edu.bluejack23_2.convhub.viewmodel
+package edu.bluejack23_2.convhub.ui
 
 import android.content.Context
 import android.net.Uri
@@ -32,8 +32,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import edu.bluejack23_2.convhub.R
-import edu.bluejack23_2.convhub.viewmodel.ui.theme.ConvHubTheme
-import java.sql.Time
+import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 
 class CreateTaskActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

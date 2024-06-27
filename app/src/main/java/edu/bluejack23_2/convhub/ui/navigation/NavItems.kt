@@ -1,4 +1,4 @@
-package edu.bluejack23_2.convhub.view.components.navigation
+package edu.bluejack23_2.convhub.ui.theme.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
