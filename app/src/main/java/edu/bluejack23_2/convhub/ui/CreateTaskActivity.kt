@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -28,17 +29,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import edu.bluejack23_2.convhub.R
 import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
+import java.sql.Time
+import java.text.DateFormat
 
 class CreateTaskActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ConvHubTheme {
+            ConvHubTheme() {
                 Surface(
                     color = MaterialTheme.colors.background
                 ) {
@@ -52,18 +56,58 @@ class CreateTaskActivity : ComponentActivity() {
 @Preview
 @Composable
 fun CreateScreen() {
-
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var title by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var categories by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
         imageUris = uris
+    }
+
+    if (showDialog) {
+        CustomAlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = "Confirm",
+            text = "Are you sure you want to upload this job?",
+            onConfirm = {
+                showDialog = false
+                val priceInt = price.toIntOrNull()
+                if (priceInt != null && priceInt > 0) {
+                    val job = hashMapOf(
+                        "title" to title,
+                        "address" to address,
+                        "description" to description,
+                        "price" to priceInt,
+                        "categories" to categories.split(",").map { it.trim() },
+                        "imageUris" to imageUris.map { it.toString() },
+                        "posted_at" to Timestamp.now(),
+                        "status" to "untaken",
+                    )
+                    uploadImagesAndSaveJob(imageUris, job, context) {
+                        imageUris = emptyList()
+                        title = ""
+                        address = ""
+                        description = ""
+                        price = ""
+                        categories = ""
+                        errorMessage = ""
+                    }
+                } else {
+                    Toast.makeText(
+                        context, "Price must be a positive number",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+            onDismiss = { showDialog = false }
+        )
     }
 
     ConvHubTheme {
@@ -105,7 +149,7 @@ fun CreateScreen() {
                                 },
                             contentScale = ContentScale.Inside
                         )
-                    }else {
+                    } else {
                         imageUris.forEach { uri ->
                             val painter: Painter = rememberAsyncImagePainter(uri)
                             Image(
@@ -138,7 +182,6 @@ fun CreateScreen() {
                         )
                     }
                 }
-
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -187,25 +230,24 @@ fun CreateScreen() {
 
                 Button(
                     onClick = {
-                        if (imageUris.isNotEmpty() && title.isNotEmpty() && address.isNotEmpty() && description.isNotEmpty() && price.isNotEmpty() && categories.isNotEmpty()) {
-                            val job = hashMapOf(
-                                "title" to title,
-                                "address" to address,
-                                "description" to description,
-                                "price" to price.toInt(),
-                                "categories" to categories.split(",").map { it.trim() },
-                                "imageUris" to imageUris.map { it.toString() },
-                                "posted_at" to "",
-                                "status" to "untaken",
-                                "job_poster" to "null",
-                                "job_taker" to "null"
-                             )
-                            uploadImagesAndSaveJob(imageUris, job, context)
-                        } else {
+                        if (imageUris.isEmpty() || title.isEmpty() || address.isEmpty() || description.isEmpty() || price.isEmpty() || categories.isEmpty()) {
+                            errorMessage = "Please fill in all fields and select images from gallery"
                             Toast.makeText(
-                                context, "Please fill in all fields and select images from gallery",
+                                context, errorMessage,
                                 Toast.LENGTH_SHORT
                             ).show()
+                        } else {
+                            val priceInt = price.toIntOrNull()
+                            if (priceInt == null || priceInt <= 0) {
+                                errorMessage = "Price must be a positive number"
+                                Toast.makeText(
+                                    context, errorMessage,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                errorMessage = ""
+                                showDialog = true
+                            }
                         }
                     },
                     shape = RoundedCornerShape(5.dp),
@@ -238,7 +280,42 @@ fun uploadImageToFirebase(uri: Uri, context: Context) {
     }
 }
 
-fun uploadImagesAndSaveJob(imageUris: List<Uri>, job: HashMap<String, Any>, context: Context) {
+@Composable
+fun CustomAlertDialog(
+    onDismissRequest: () -> Unit,
+    title: String,
+    text: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .border(2.dp, Color.Black, shape = RoundedCornerShape(8.dp))
+            .padding(16.dp)
+    ) {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text(text = title) },
+            text = { Text(text) },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("No")
+                }
+            }
+        )
+    }
+}
+fun uploadImagesAndSaveJob(
+    imageUris: List<Uri>,
+    job: HashMap<String, Any>,
+    context: Context,
+    onSuccess: () -> Unit
+) {
     val storage = FirebaseStorage.getInstance()
     val storageReference = storage.reference
     val db = FirebaseFirestore.getInstance()
@@ -254,6 +331,7 @@ fun uploadImagesAndSaveJob(imageUris: List<Uri>, job: HashMap<String, Any>, cont
                 context, "Job Upload Successful",
                 Toast.LENGTH_SHORT
             ).show()
+            onSuccess()
         }
         .addOnFailureListener {
             Toast.makeText(

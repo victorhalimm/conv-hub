@@ -21,9 +21,6 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.CreateTaskActivity"
-            android:exported="false" />
-        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
@@ -37,7 +34,7 @@
         <!-- </intent-filter> -->
         <!-- </activity> -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".ui.CreateTaskActivity"
             android:exported="true"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.ConvHub">
