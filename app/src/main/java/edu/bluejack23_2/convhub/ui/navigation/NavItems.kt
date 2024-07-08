@@ -1,8 +1,6 @@
-package edu.bluejack23_2.convhub.ui.theme.navigation
+package edu.bluejack23_2.convhub.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home

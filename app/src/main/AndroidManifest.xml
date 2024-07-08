@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".ConvHub"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,7 +13,7 @@
         android:theme="@style/Theme.ConvHub"
         tools:targetApi="31">
         <activity
-            android:name=".HomeActivity"
+            android:name=".LandingActivity"
             android:exported="false"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.ConvHub" />
@@ -36,9 +37,9 @@
         <!-- </intent-filter> -->
         <!-- </activity> -->
         <activity
-            android:name=".LandingActivity"
+            android:name=".HomeActivity"
             android:exported="true"
-            android:label="@string/title_activity_create_task"
+            android:label="@string/title_activity_home"
             android:theme="@style/Theme.ConvHub">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
