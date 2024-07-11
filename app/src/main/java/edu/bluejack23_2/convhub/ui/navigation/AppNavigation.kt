@@ -18,8 +18,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import edu.bluejack23_2.convhub.ui.screens.home.HomeScreen
+import edu.bluejack23_2.convhub.ui.screens.profile.ProfileScreen
 import edu.bluejack23_2.convhub.ui.theme.screens.ActiveTaskScreen
-import edu.bluejack23_2.convhub.ui.theme.screens.ProfileScreen
 import edu.bluejack23_2.convhub.ui.theme.screens.ScheduleScreen
 import edu.bluejack23_2.convhub.ui.theme.*
 
