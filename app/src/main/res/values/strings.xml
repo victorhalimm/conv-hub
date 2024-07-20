@@ -4,4 +4,6 @@
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_activity_create_task">CreateTask</string>
+    <string name="title_activity_biometrics_screen">BiometricsScreen</string>
+    <string name="title_activity_job_detail_screen">JobDetailScreen</string>
 </resources>

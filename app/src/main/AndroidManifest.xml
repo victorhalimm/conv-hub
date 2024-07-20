@@ -12,6 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ConvHub"
         tools:targetApi="31">
+<!--        <activity-->
+<!--            android:name=".ui.screens.jobdetail.JobDetailScreenKt"-->
+<!--            android:exported="false"-->
+<!--            android:label="@string/title_activity_job_detail_screen"-->
+<!--            android:theme="@style/Theme.ConvHub" />-->
+        <activity
+            android:name=".ui.CreateTaskActivity"
+            android:exported="false"
+            android:label="@string/title_activity_job_detail_screen"
+            android:theme="@style/Theme.ConvHub" />
         <activity
             android:name=".HomeActivity"
             android:exported="false"
@@ -25,19 +35,15 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".LandingActivity" -->
-        <!-- android:exported="true"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.biometrics.BiometricsScreen"
+            android:exported="true"
+            android:label="@string/title_activity_biometrics_screen"
+            android:theme="@style/Theme.ConvHub"></activity>
         <activity
             android:name=".LandingActivity"
-            android:exported="true"
-            android:label="@string/title_activity_home"
-            android:theme="@style/Theme.ConvHub">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

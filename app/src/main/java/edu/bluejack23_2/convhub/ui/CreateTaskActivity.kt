@@ -260,26 +260,6 @@ fun CreateScreen() {
     }
 }
 
-fun uploadImageToFirebase(uri: Uri, context: Context) {
-    val storage = FirebaseStorage.getInstance()
-    val storageReference = storage.reference
-    val imageReference = storageReference.child("images/" + uri.lastPathSegment)
-
-    val uploadTask = imageReference.putFile(uri)
-
-    uploadTask.addOnSuccessListener {
-        Toast.makeText(
-            context, "Image Upload Successful",
-            Toast.LENGTH_SHORT
-        ).show()
-    }.addOnFailureListener {
-        Toast.makeText(
-            context, "Image Upload Failed",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-}
-
 @Composable
 fun CustomAlertDialog(
     onDismissRequest: () -> Unit,
@@ -319,24 +299,61 @@ fun uploadImagesAndSaveJob(
     val storage = FirebaseStorage.getInstance()
     val storageReference = storage.reference
     val db = FirebaseFirestore.getInstance()
+    val currentUser = FirebaseAuth.getInstance().currentUser
+
+    if (currentUser == null) {
+        Toast.makeText(context, "User not logged in", Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    val userId = currentUser.uid
+    job["jobLister"] = userId
+
+    val uploadedImageUrls = mutableListOf<String>()
+    var uploadCount = 0
 
     imageUris.forEach { uri ->
         val imageReference = storageReference.child("images/" + uri.lastPathSegment)
         val uploadTask = imageReference.putFile(uri)
+
+        uploadTask.addOnSuccessListener {
+            imageReference.downloadUrl.addOnSuccessListener { downloadUri ->
+                uploadedImageUrls.add(downloadUri.toString())
+                uploadCount++
+
+                if (uploadCount == imageUris.size) {
+                    // All images have been uploaded
+                    job["imageUris"] = uploadedImageUrls
+
+                    db.collection("job")
+                        .add(job)
+                        .addOnSuccessListener {
+                            Toast.makeText(
+                                context, "Job Upload Successful",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            onSuccess()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(
+                                context, "Job Upload Failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
+            }.addOnFailureListener {
+                Toast.makeText(
+                    context, "Failed to get download URL for image",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }.addOnFailureListener {
+            Toast.makeText(
+                context, "Image Upload Failed",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
-    db.collection("job")
-        .add(job)
-        .addOnSuccessListener {
-            Toast.makeText(
-                context, "Job Upload Successful",
-                Toast.LENGTH_SHORT
-            ).show()
-            onSuccess()
-        }
-        .addOnFailureListener {
-            Toast.makeText(
-                context, "Job Upload Failed",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
 }
+
+
