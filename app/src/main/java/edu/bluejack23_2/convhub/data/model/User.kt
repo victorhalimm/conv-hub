@@ -8,8 +8,9 @@ data class User(
     val id: String = "",
     val email: String = "",
     val picture: String = "",
-    val jobs: List<String> = listOf() // Provide an empty list as the default value
+    val jobs: List<String> = listOf(),
+    val preferredFields : List<String> = listOf(),
 ) {
     // No-argument constructor for Firestore
-    constructor() : this(Date(), "", "", "", "", listOf())
+    constructor() : this(Date(), "", "", "", "", listOf(), listOf())
 }

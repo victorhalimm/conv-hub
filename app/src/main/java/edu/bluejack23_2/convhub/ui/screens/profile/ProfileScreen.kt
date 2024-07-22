@@ -25,6 +25,7 @@
     import androidx.compose.ui.unit.sp
     import androidx.hilt.navigation.compose.hiltViewModel
     import coil.compose.rememberAsyncImagePainter
+    import edu.bluejack23_2.convhub.ui.CreateTaskActivity
     import edu.bluejack23_2.convhub.ui.viewmodel.ProfileViewModel
     import java.util.*
 
@@ -58,7 +59,7 @@
                 email = user.email
                 dob = user.dob
                 picture = user.picture
-                jobs = user.jobs.joinToString(", ")
+                jobs = user.preferredFields.joinToString(", ")
             }
         }
 
@@ -87,7 +88,9 @@
             Text(
                 text = "My Profile",
                 fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 16.dp).align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .align(Alignment.CenterHorizontally)
             )
 
             Image(
@@ -98,7 +101,8 @@
                     .align(Alignment.CenterHorizontally)
                     .clip(CircleShape)
                     .clickable {
-                        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        val intent =
+                            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                         imagePickerLauncher.launch(intent)
                     }
             )
@@ -132,27 +136,45 @@
             TextField(
                 value = jobs,
                 onValueChange = { jobs = it },
-                label = { Text("Jobs (comma separated)") },
+                label = { Text("Preferred Fields (comma separated)") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    val jobsList = jobs.split(",").map { it.trim() }
-                    viewModel.updateUserProfile(username, email, dob, picture, jobsList, imageUri, onSuccess = { message ->
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                    }, onFailure = { errorMessage ->
-                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                    })
-                },
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color.Blue,
-                    contentColor = MaterialTheme.colors.onPrimary
-                ),
-                modifier = Modifier.align(Alignment.Start)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Save")
+                Button(
+                    onClick = {
+                        val jobsList = jobs.split(",").map { it.trim() }
+                        viewModel.updateUserProfile(username, email, dob, picture, jobsList, imageUri, onSuccess = { message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }, onFailure = { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        })
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Blue,
+                        contentColor = MaterialTheme.colors.onPrimary
+                    ),
+                ) {
+                    Text("Save")
+                }
+                Button(
+                    onClick = {
+                        val intent = Intent(context, CreateTaskActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Blue,
+                        contentColor = MaterialTheme.colors.onPrimary
+                    ),
+                ) {
+                    Text("Create Job")
+                }
             }
+
 
             Spacer(modifier = Modifier.height(8.dp))
             TextField(

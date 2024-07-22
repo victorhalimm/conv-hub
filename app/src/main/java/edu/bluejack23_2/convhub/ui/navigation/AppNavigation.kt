@@ -50,12 +50,6 @@ fun AppNavigation() {
                         icon = {
                             Icon(imageVector = navItem.icon, contentDescription = null, modifier = Modifier.size(32.dp))
                         },
-                        label = {
-                            if (isSelected) {
-                                Text(text = navItem.label)
-                            }
-                        },
-
                     )
                 }
             }

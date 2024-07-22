@@ -121,7 +121,7 @@ class ProfileViewModel @Inject constructor(
                     }
                     imageUri != null -> {
                         uploadImage(imageUri, onSuccess = { imageUrl ->
-                            val user = User(dob ?: Date(), username, userId, email, imageUrl, jobs)
+                            val user = User(dob ?: Date(), username, userId, email, imageUrl, preferredFields =  jobs)
                             firestore.collection("users").document(userId).set(user)
                             _userState.value = user
                             onSuccess("Profile updated successfully")
@@ -130,7 +130,7 @@ class ProfileViewModel @Inject constructor(
                         })
                     }
                     else -> {
-                        val user = User(dob ?: Date(), username, userId, email, picture, jobs)
+                        val user = User(dob ?: Date(), username, userId, email, picture, preferredFields = jobs)
                         firestore.collection("users").document(userId).set(user).await()
                         _userState.value = user
                         onSuccess("Profile updated successfully")
