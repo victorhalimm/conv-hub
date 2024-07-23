@@ -3,7 +3,6 @@ package edu.bluejack23_2.convhub.ui.screens.home
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -28,12 +27,12 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
-import edu.bluejack23_2.convhub.data.model.Job
 import edu.bluejack23_2.convhub.data.model.User
 import edu.bluejack23_2.convhub.ui.events.UiEvent
 import edu.bluejack23_2.convhub.ui.screens.user.UserViewModel
-import edu.bluejack23_2.convhub.ui.viewmodel.HomeViewModel
+import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.theme.DarkBlue
+import edu.bluejack23_2.convhub.ui.theme.LightGray
 import edu.bluejack23_2.convhub.ui.theme.PastelBlue
 import kotlinx.coroutines.flow.collectLatest
 
@@ -67,117 +66,99 @@ fun HomeScreen(
         }
     }
 
-    val dummyJobs = listOf(
-        JobItemData(
-            imageUrl = "https://your-firebase-url.com/image1.jpg",
-            title = "Clean a backyard of a House",
-            rating = "4.5",
-            jobLister = "roglau",
-            price = "$50"
-        ),
-        JobItemData(
-            imageUrl = "https://your-firebase-url.com/image2.jpg",
-            title = "Babysitting for 2 hours",
-            rating = "4.8",
-            jobLister = "jane_doe",
-            price = "$30"
-        )
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBlue)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
+    ConvHubTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(LightGray)
         ) {
-            TopSection(
-                searchQuery = searchQuery,
-                onSearchQueryChange = { query -> viewModel.updateSearchQuery(query) },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                currentUser = currentUser
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                    .background(Color.White)
-                    .padding(16.dp)
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                if (jobState.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(
-                                text = "No Data Available",
-                                fontSize = 12.sp,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                    }
-                } else {
-                    item {
-                        Text(
-                            text = "Nearest Jobs",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight(500)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    item {
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            items(jobState) { job ->
-                                JobItem(
-                                    imageUrl = job.imageUris[0],
-                                    title = job.title,
-                                    rating = job.rating.toString(),
-                                    author = job.jobLister,
-                                    price = job.price.toString()
+                TopSection(
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { query -> viewModel.updateSearchQuery(query) },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    currentUser = currentUser
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    if (jobState.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "No Data Available",
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.align(Alignment.Center)
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-
-                    if (preferredFields.isEmpty()) {
-                        item {
-                            SelectPreferredFieldsScreen(
-                                availableFields = listOf("Technology", "Cleaning", "Babysitting", "Housework"),
-                                onFieldsSelected = { fields ->
-                                    viewModel.savePreferredFields(fields)
-                                }
-                            )
-                        }
-                    }
-                    else {
+                    } else {
                         item {
                             Text(
-                                text = "Recommended Jobs",
+                                text = "Nearest Jobs",
                                 fontSize = 24.sp,
-                                fontWeight = FontWeight(500)
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 8.dp)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                         }
                         item {
-                            // !!!To be Changed with actual fetchJobByField
-
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                items(jobPreferred) {job ->
+                                items(jobState) { job ->
                                     JobItem(
-                                        imageUrl = job.imageUris.firstOrNull().toString(),
+                                        imageUrl = job.imageUris[0],
                                         title = job.title,
                                         rating = job.rating.toString(),
                                         author = job.jobLister,
                                         price = job.price.toString()
                                     )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+
+                        if (preferredFields.isEmpty()) {
+                            item {
+                                SelectPreferredFieldsScreen(
+                                    availableFields = listOf("Technology", "Cleaning", "Babysitting", "Housework"),
+                                    onFieldsSelected = { fields ->
+                                        viewModel.savePreferredFields(fields)
+                                    }
+                                )
+                            }
+                        } else {
+                            item {
+                                Text(
+                                    text = "Recommended Jobs",
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            }
+                            item {
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    items(jobPreferred) { job ->
+                                        JobItem(
+                                            imageUrl = job.imageUris.firstOrNull().toString(),
+                                            title = job.title,
+                                            rating = job.rating.toString(),
+                                            author = job.jobLister,
+                                            price = job.price.toString()
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -198,12 +179,12 @@ fun SelectPreferredFieldsScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-
+            .padding(vertical = 16.dp)
     ) {
         Text(
             text = "Select Preferred Categories",
             fontSize = 20.sp,
-            fontWeight = FontWeight(500),
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -242,7 +223,6 @@ fun SelectPreferredFieldsScreen(
             }
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
@@ -251,19 +231,18 @@ fun SelectPreferredFieldsScreen(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             contentPadding = PaddingValues(vertical = 12.dp)
-
         ) {
             Text(text = "Save Preferences", color = Color.White)
         }
     }
 }
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreenPreviewContent()
+    ConvHubTheme {
+        HomeScreenPreviewContent()
+    }
 }
 
 @Composable
@@ -278,7 +257,11 @@ fun JobItem(
         modifier = Modifier
             .width(180.dp)
             .height(260.dp),
-        elevation = 4.dp,
+        border = BorderStroke(
+            color = LightGray,
+            width = 1.dp
+        ),
+        elevation = 0.dp,
         shape = RoundedCornerShape(6.dp)
     ) {
         Column(
@@ -287,27 +270,35 @@ fun JobItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .weight(1f)
             ) {
                 Image(
                     painter = rememberImagePainter(imageUrl),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)),
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
                 fontWeight = FontWeight(500),
                 fontSize = 16.sp,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(
+                        horizontal = 8.dp,
+                        vertical = 4.dp
+                    )
+
             )
-            Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(
+                        horizontal = 8.dp
+                    )
+                    .weight(0.3f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -329,11 +320,13 @@ fun JobItem(
                     fontWeight = FontWeight(500)
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(
+                        horizontal = 8.dp
+                    )
+                    .weight(0.3f),
             ) {
                 Text(
                     text = "From ",
@@ -351,25 +344,23 @@ fun JobItem(
     }
 }
 
-
-
 @Composable
 fun HomeScreenPreviewContent() {
     // Simulate some initial state for preview
 
     val dummyJobs = listOf(
-        JobItem(
+        JobItemData(
             imageUrl = "https://your-firebase-url.com/image1.jpg",
             title = "Clean a backyard of a House",
             rating = "4.5",
-            author = "roglau",
+            jobLister = "roglau",
             price = "$50"
         ),
-        JobItem(
+        JobItemData(
             imageUrl = "https://your-firebase-url.com/image2.jpg",
             title = "Babysitting for 2 hours",
             rating = "4.8",
-            author = "jane_doe",
+            jobLister = "jane_doe",
             price = "$30"
         )
     )
@@ -377,7 +368,7 @@ fun HomeScreenPreviewContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBlue)
+            .background(LightGray)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -386,14 +377,13 @@ fun HomeScreenPreviewContent() {
                 searchQuery = TextFieldValue("Search..."),
                 onSearchQueryChange = {},
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 currentUser = null
             )
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                     .background(Color.White)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -401,63 +391,51 @@ fun HomeScreenPreviewContent() {
                 Text(
                     text = "Nearest Jobs",
                     fontSize = 24.sp,
-                    fontWeight = FontWeight(500)
+                    fontWeight = FontWeight.Bold
                 )
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(dummyJobs) { job ->
-                        job
+                        JobItem(
+                            imageUrl = job.imageUrl,
+                            title = job.title,
+                            rating = job.rating,
+                            author = job.jobLister,
+                            price = job.price
+                        )
                     }
                 }
 
                 SelectPreferredFieldsScreen(
                     availableFields = listOf("Engineering", "Design", "Marketing", "Sales"),
                     onFieldsSelected = { fields ->
-//                                userViewModel.updatePreferredFields(fields)
-//                                viewModel.fetchJobsByPreferredFields(fields)
+                        // userViewModel.updatePreferredFields(fields)
+                        // viewModel.fetchJobsByPreferredFields(fields)
                     }
                 )
-
-//                Text(
-//                    text = "Jobs based on Preferred Field",
-//                    fontSize = 24.sp,
-//                    fontWeight = FontWeight(500)
-//                )
-//                Row(
-//                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-//
-//                    ) {
-//                    JobItem()
-//                    JobItem()
-//                    JobItem()
-//                }
             }
         }
     }
 }
-
 
 @Composable
 fun TopSection(
     searchQuery: TextFieldValue,
     onSearchQueryChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
-    currentUser : User?
+    currentUser: User?
 ) {
     Column(
         modifier = modifier
-            .background(DarkBlue)
             .padding(
                 horizontal = 16.dp,
                 vertical = 28.dp
             )
-
     ) {
         Text(
-            text = String.format("Hi, %s", currentUser?.username),
-            color = Color.White,
+            text = String.format("Hello, %s!", currentUser?.username),
+            color = Color.Black,
             fontSize = 20.sp,
             fontWeight = FontWeight(500),
             modifier = Modifier.padding(bottom = 12.dp)
@@ -468,13 +446,10 @@ fun TopSection(
             placeholder = { Text(text = "Search Jobs", fontSize = 12.sp) },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp)
-                .padding(
-                    vertical = 0.dp
-                ),
+                .height(46.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 backgroundColor = Color.White,
-                focusedBorderColor = PastelBlue
+                focusedBorderColor = PastelBlue,
             ),
             textStyle = TextStyle(fontSize = 12.sp),
             shape = RoundedCornerShape(14.dp),

@@ -17,8 +17,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import edu.bluejack23_2.convhub.di.RepositoryModule
 import edu.bluejack23_2.convhub.ui.CreateTaskActivity
 import edu.bluejack23_2.convhub.ui.screens.jobdetail.JobDetailViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -27,6 +31,8 @@ fun ActiveTaskScreen(
 ) {
     val context = LocalContext.current
     val jobs by viewModel.userJobsState.collectAsState()
+
+    val jobRepository = RepositoryModule.provideJobRepository()
 
     LaunchedEffect(Unit) {
         viewModel.fetchUserJobs()
@@ -69,8 +75,18 @@ fun ActiveTaskScreen(
                             modifier = Modifier.padding(16.dp)
                         ) {
                             Text(text = job.title, fontSize = 20.sp, color = Color.Blue)
-                            Text(text = "Price: Rp.${job.price}", color = Color(0xFF6699CC))
+                            Text(text = "Price: $${job.price}", color = Color(0xFF6699CC))
                             Text(text = "Requirements: ${job.categories.joinToString(", ")}", color = Color(0xFF6699CC))
+                            Button(
+                                onClick = {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        jobRepository.removeJobByID(job.id)
+                                        viewModel.fetchUserJobs()
+                                    }
+                                }
+                            ) {
+                                Text(text = "Remove Task")
+                            }
                         }
                     }
                 }

@@ -34,11 +34,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import edu.bluejack23_2.convhub.R
+import edu.bluejack23_2.convhub.data.repository.UserRepository
+import edu.bluejack23_2.convhub.di.RepositoryModule
 import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import java.sql.Time
 import java.text.DateFormat
 
 class CreateTaskActivity : ComponentActivity() {
+
+
+    private val userRepository : UserRepository = RepositoryModule.provideUserRepository()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

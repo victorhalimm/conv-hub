@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import edu.bluejack23_2.convhub.HomeActivity
-import edu.bluejack23_2.convhub.ui.screens.biometrics.ui.theme.ConvHubTheme
 import java.util.concurrent.Executor
 import android.widget.Toast
+import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 
 class BiometricsScreen : FragmentActivity() {
     private lateinit var executor: Executor
@@ -58,7 +58,7 @@ class BiometricsScreen : FragmentActivity() {
             .build()
 
         setContent {
-            ConvHubTheme {
+            ConvHubTheme() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background

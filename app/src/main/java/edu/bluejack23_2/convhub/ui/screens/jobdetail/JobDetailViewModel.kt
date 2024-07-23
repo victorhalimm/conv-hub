@@ -11,6 +11,7 @@ import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.bluejack23_2.convhub.data.model.Job
 import edu.bluejack23_2.convhub.data.model.User
+import edu.bluejack23_2.convhub.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -20,8 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class JobDetailViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val storage: FirebaseStorage,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _userJobsState = MutableStateFlow<List<Job>>(emptyList())
@@ -35,7 +36,16 @@ class JobDetailViewModel @Inject constructor(
                     .whereEqualTo("jobLister", userId)
                     .get()
                     .await()
-                val jobs = documents.toObjects(Job::class.java)
+                val jobs = documents.mapNotNull { document ->
+                    val job = document.toObject(Job::class.java)
+                    if (job != null) {
+                        val username = userRepository.fetchUsernameByUid(job.jobLister)
+                        job.copy(id = document.id, jobLister = username ?: job.jobLister)
+                    } else {
+                        null
+                    }
+                }
+                jobs
                 _userJobsState.value = jobs
             } catch (e: Exception) {
                 Log.e("JobDetailViewModel", "Error fetching user jobs", e)

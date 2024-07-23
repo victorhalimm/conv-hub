@@ -6,4 +6,6 @@
     <string name="title_activity_create_task">CreateTask</string>
     <string name="title_activity_biometrics_screen">BiometricsScreen</string>
     <string name="title_activity_job_detail_screen">JobDetailScreen</string>
+    <string name="title_activity_detail_lister_screen">DetailListerScreen</string>
+    <string name="title_activity_detail_taker_screen">DetailTakerScreen</string>
 </resources>

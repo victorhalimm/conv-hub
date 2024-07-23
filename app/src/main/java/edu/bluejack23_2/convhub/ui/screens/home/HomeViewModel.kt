@@ -1,4 +1,4 @@
-package edu.bluejack23_2.convhub.ui.viewmodel
+package edu.bluejack23_2.convhub.ui.screens.home
 
 import android.util.Log
 import androidx.compose.runtime.collectAsState
@@ -92,6 +92,7 @@ class HomeViewModel @Inject constructor(
 
                 fetchJobs()
                 fetchPreferredFields()
+                fetchPreferredJobs(fields)
 
             } catch (e: Exception) {
                 Log.e("JobRepository", "Error saving preferred fields", e)

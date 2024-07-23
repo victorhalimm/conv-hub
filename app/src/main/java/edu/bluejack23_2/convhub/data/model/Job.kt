@@ -14,7 +14,7 @@ data class Job(
     val title: String = "",
     val rating: Float = 0f,
     val description: String = "",
-    val applicants: List<String> = emptyList(),
+    val applicants: List<Applicant> = emptyList(),
     val posted_at: Date = Date()
 ) {
     // No-argument constructor for Firestore

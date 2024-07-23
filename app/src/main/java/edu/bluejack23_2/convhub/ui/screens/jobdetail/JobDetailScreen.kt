@@ -27,8 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import dagger.hilt.android.AndroidEntryPoint
-import edu.bluejack23_2.convhub.ui.screens.jobdetail.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.screens.profile.ProfileScreen
+import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.viewmodel.ProfileViewModel
 
 @AndroidEntryPoint
@@ -36,7 +36,7 @@ class JobActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ConvHubTheme {
+            ConvHubTheme() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
