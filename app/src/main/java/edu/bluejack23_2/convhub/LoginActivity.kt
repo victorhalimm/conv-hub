@@ -11,6 +11,8 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import edu.bluejack23_2.convhub.databinding.ActivityLoginBinding
+import edu.bluejack23_2.convhub.ui.screens.forgotpassword.ForgotPasswordActivity
+import edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.JobTakerProfileActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -47,6 +49,11 @@ class LoginActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Error oh no!", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.forgotPwLabel.setOnClickListener {
+            val forgotPasswordIntent = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(forgotPasswordIntent)
         }
 
         val text : String = "Don't have an account? Register now"

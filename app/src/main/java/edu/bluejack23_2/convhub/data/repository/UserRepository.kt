@@ -33,7 +33,16 @@ class UserRepository {
         }
     }
 
-
+    suspend fun fetchUserByUid(uid: String): User? {
+        return try {
+            val documentSnapshot = db.collection("users").document(uid).get().await()
+            val user = documentSnapshot.toObject(User::class.java)
+            user?.copy(id = uid)
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error fetching user", e)
+            null
+        }
+    }
 
 
     suspend fun savePreferredFields(fields: List<String>) {

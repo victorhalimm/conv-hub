@@ -10,6 +10,8 @@ import edu.bluejack23_2.convhub.di.RepositoryModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Calendar
+import java.util.Date
 
 class JobRepository {
     private val db = FirebaseFirestore.getInstance()
@@ -81,7 +83,11 @@ class JobRepository {
         for (userId in userIds) {
             val userRef = db.collection("users").document(userId)
             val userSnapshot = userRef.get().await()
-            userSnapshot.toObject(User::class.java)?.let { users.add(it) }
+            userSnapshot.toObject(User::class.java)?.let {
+                val user = it.copy(id = userId)
+                users.add(user)
+            }
+
         }
         return users
     }
@@ -132,6 +138,58 @@ class JobRepository {
                     Log.d("JobRepository", "Current data: null")
                 }
             }
+    }
+
+    suspend fun getJobsByDateAndUser(date: Date, userId: String): List<Job> {
+        val jobsCollection = db.collection("job")
+        val startOfDay = Calendar.getInstance().apply {
+            time = date
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        val endOfDay = Calendar.getInstance().apply {
+            time = date
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }.time
+
+        return try {
+            val querySnapshot = jobsCollection
+                .whereEqualTo("jobTaker", userId)
+                .whereGreaterThanOrEqualTo("taken_at", startOfDay)
+                .whereLessThanOrEqualTo("taken_at", endOfDay)
+                .get()
+                .await()
+
+            querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Job::class.java)
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getTakenJobs(userId: String): List<Job> {
+        val jobsCollection = db.collection("job")
+
+        return try {
+            val querySnapshot = jobsCollection
+                .whereEqualTo("jobTaker", userId)
+                .whereIn("status", listOf("taken", "completed"))
+                .get()
+                .await()
+
+            querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Job::class.java)
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     fun removeJobApplicantsListener() {

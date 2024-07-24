@@ -16,16 +16,20 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import java.util.*
 import android.util.Patterns
+import edu.bluejack23_2.convhub.data.repository.UserRepository
+import edu.bluejack23_2.convhub.di.RepositoryModule_ProvideUserRepositoryFactory
+import kotlinx.coroutines.flow.StateFlow
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow(User())
-    val userState = _userState.asStateFlow()
+    val userState: StateFlow<User> get() = _userState
 
     init {
         fetchUserProfile()
@@ -152,6 +156,15 @@ class ProfileViewModel @Inject constructor(
             .addOnFailureListener { exception ->
                 onFailure(exception)
             }
+    }
+
+    fun loadUser(userId: String) {
+        viewModelScope.launch {
+            val user = userRepository.fetchUserByUid(userId)
+            user?.let {
+                _userState.value = it
+            }
+        }
     }
 
     fun refreshProfile() {

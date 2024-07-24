@@ -1,5 +1,6 @@
 package edu.bluejack23_2.convhub.ui.screens.detailLister
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import edu.bluejack23_2.convhub.R
 import edu.bluejack23_2.convhub.data.model.Job
 import edu.bluejack23_2.convhub.data.model.User
+import edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.JobTakerProfileActivity
 import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.theme.DarkBlue
 import java.util.Date
@@ -79,6 +82,8 @@ fun JobDetailScreen(jobId: String, viewModel: DetailListerViewModel = hiltViewMo
 
 @Composable
 fun JobDetailContent(job: Job, applicants: List<User>) {
+
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -181,7 +186,12 @@ fun JobDetailContent(job: Job, applicants: List<User>) {
             )
             Spacer(modifier = Modifier.height(6.dp))
             applicants.forEach { applicant ->
-                edu.bluejack23_2.convhub.ui.screens.detailTaker.ApplicationCard(applicant)
+                ApplicationCard(applicant = applicant) {
+                    val intent = Intent(context, JobTakerProfileActivity::class.java).apply {
+                        putExtra("userId", it.id)
+                    }
+                    context.startActivity(intent)
+                }
                 Spacer(modifier = Modifier.height(6.dp))
             }
         }
@@ -189,7 +199,7 @@ fun JobDetailContent(job: Job, applicants: List<User>) {
 }
 
 @Composable
-fun ApplicationCard(applicant: User) {
+fun ApplicationCard(applicant: User, onClick: (User) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,7 +208,8 @@ fun ApplicationCard(applicant: User) {
                 color = Color.LightGray,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(12.dp),
+            .padding(12.dp)
+            .clickable { onClick(applicant) },  // Add clickable modifier
     ) {
         Text(text = applicant.username, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(4.dp))
@@ -206,6 +217,7 @@ fun ApplicationCard(applicant: User) {
         Spacer(modifier = Modifier.height(4.dp))
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
