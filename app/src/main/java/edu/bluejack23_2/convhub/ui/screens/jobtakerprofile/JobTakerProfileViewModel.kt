@@ -21,9 +21,27 @@ class JobTakerProfileViewModel @Inject constructor(
     private val _jobs = MutableStateFlow<List<Job>>(emptyList())
     val jobs: StateFlow<List<Job>> = _jobs
 
+    private val _previousjobs = MutableStateFlow<List<Job>>(emptyList())
+    val previousjobs: StateFlow<List<Job>> = _previousjobs
+
+    private val _availablejobs = MutableStateFlow<List<Job>>(emptyList())
+    val availablejobs: StateFlow<List<Job>> = _availablejobs
+
     fun fetchTakenJobs(userId: String) {
         viewModelScope.launch {
             _jobs.value = jobRepository.getTakenJobs(userId)
+        }
+    }
+
+    fun fetchAvailableJobs(userId: String){
+      viewModelScope.launch {
+          _availablejobs.value = jobRepository.getAvailableJobs(userId)
+      }
+    }
+
+    fun fetchPreviousJobs(userId: String){
+        viewModelScope.launch {
+            _previousjobs.value = jobRepository.getPreviousJobs(userId)
         }
     }
 }

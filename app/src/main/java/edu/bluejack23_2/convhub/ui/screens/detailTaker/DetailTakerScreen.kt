@@ -1,5 +1,6 @@
 package edu.bluejack23_2.convhub.ui.screens.detailTaker
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -11,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -22,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +38,8 @@ import edu.bluejack23_2.convhub.R
 import edu.bluejack23_2.convhub.data.model.Job
 import edu.bluejack23_2.convhub.data.model.User
 import edu.bluejack23_2.convhub.ui.events.UiEvent
+import edu.bluejack23_2.convhub.ui.screens.joblisterprofile.JobListerProfileActivity
+import edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.JobTakerProfileActivity
 import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.theme.DarkBlue
 import kotlinx.coroutines.flow.collectLatest
@@ -95,7 +101,7 @@ fun JobDetailScreen(jobId: String, viewModel: DetailTakerViewModel = hiltViewMod
 @Composable
 fun JobDetailContent(job: Job, viewModel: DetailTakerViewModel? = null) {
     val userId = "XfLfUtPNZGX1W7L0mtOv1VlzlkF3"
-
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -174,11 +180,19 @@ fun JobDetailContent(job: Job, viewModel: DetailTakerViewModel? = null) {
                             color = Color.LightGray,
                             fontWeight = FontWeight(500)
                         )
-                        Text(
-                            text = job.jobLister,
-                            fontSize = 14.sp,
-                            color = DarkBlue,
-                            fontWeight = FontWeight(500)
+                        ClickableText(
+                            text = AnnotatedString(job.jobListerUsername),
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                color = DarkBlue,
+                                fontWeight = FontWeight(500)
+                            ),
+                            onClick = {
+                                val intent = Intent(context, JobListerProfileActivity::class.java).apply {
+                                    putExtra("userId", job.jobLister)
+                                }
+                                context.startActivity(intent)
+                            }
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))

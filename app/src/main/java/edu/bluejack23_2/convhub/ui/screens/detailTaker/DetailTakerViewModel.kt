@@ -33,7 +33,7 @@ class DetailTakerViewModel @Inject constructor(
             val job = jobRepository.getJobById(jobId)
             job?.let {
                 val username = userRepository.fetchUsernameByUid(it.jobLister)
-                val updatedJob = it.copy(jobLister = username ?: it.jobLister)
+                val updatedJob = it.copy(jobListerUsername = username ?: it.jobListerUsername)
                 _jobDetail.value = updatedJob
             } ?: run {
                 _jobDetail.value = null

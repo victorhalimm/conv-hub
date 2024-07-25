@@ -13,6 +13,11 @@
         android:theme="@style/Theme.ConvHub"
         tools:targetApi="31">
         <activity
+            android:name=".ui.screens.joblisterprofile.JobListerProfileActivity"
+            android:exported="false"
+            android:label="@string/title_activity_job_lister_profile_screen"
+            android:theme="@style/Theme.ConvHub" />
+        <activity
             android:name=".ui.screens.forgotpassword.ForgotPasswordActivity"
             android:exported="false"
             android:label="@string/title_activity_forgot_password_screen"
@@ -22,21 +27,16 @@
             android:exported="false"
             android:label="@string/title_activity_job_detail_screen"
             android:theme="@style/Theme.ConvHub" />
+<!--        <activity-->
+<!--            android:name=".ui.screens.detailTaker.DetailTakerScreen"-->
+<!--            android:exported="false"-->
+<!--            android:label="@string/title_activity_detail_taker_screen"-->
+<!--            android:theme="@style/Theme.ConvHub" />-->
         <activity
-            android:name=".ui.screens.detailTaker.DetailTakerScreen"
+            android:name=".ui.screens.detailLister.DetailListerScreen"
             android:exported="false"
-            android:label="@string/title_activity_detail_taker_screen"
+            android:label="@string/title_activity_detail_lister_screen"
             android:theme="@style/Theme.ConvHub" />
-         <activity
-         android:name=".ui.screens.detailLister.DetailListerScreen"
-         android:exported="false"
-         android:label="@string/title_activity_detail_lister_screen"
-         android:theme="@style/Theme.ConvHub" />
-        <!-- <activity -->
-        <!-- android:name=".ui.screens.jobdetail.JobDetailScreenKt" -->
-        <!-- android:exported="false" -->
-        <!-- android:label="@string/title_activity_job_detail_screen" -->
-        <!-- android:theme="@style/Theme.ConvHub" /> -->
         <activity
             android:name=".ui.CreateTaskActivity"
             android:exported="false"
@@ -66,7 +66,7 @@
             android:exported="false"
             android:theme="@style/Theme.ConvHub" />
         <activity
-            android:name=".LandingActivity"
+            android:name=".ui.screens.detailTaker.DetailTakerScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

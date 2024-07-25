@@ -192,6 +192,41 @@ class JobRepository {
         }
     }
 
+    suspend fun getAvailableJobs(userId: String): List<Job> {
+        val jobsCollection = db.collection("job")
+
+        return try {
+            val querySnapshot = jobsCollection
+                .whereEqualTo("jobLister", userId)
+                .whereIn("status", listOf("untaken"))
+                .get()
+                .await()
+            querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Job::class.java)
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getPreviousJobs(userId: String): List<Job> {
+        val jobsCollection = db.collection("job")
+
+        return try {
+            val querySnapshot = jobsCollection
+                .whereEqualTo("jobLister", userId)
+                .whereIn("status", listOf("taken", "completed"))
+                .get()
+                .await()
+
+            querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Job::class.java)
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     fun removeJobApplicantsListener() {
         jobListener?.remove()
     }
