@@ -41,7 +41,7 @@ class DetailListerViewModel @Inject constructor(
             val (job, users) = jobRepository.fetchJobWithApplicants(jobId)
             job?.let {
                 val username = userRepository.fetchUsernameByUid(it.jobLister)
-                val updatedJob = it.copy(jobLister = username ?: it.jobLister)
+                val updatedJob = it.copy(jobListerUsername = username ?: it.jobListerUsername)
                 _jobDetail.value = updatedJob
             } ?: run {
                 _jobDetail.value = null
