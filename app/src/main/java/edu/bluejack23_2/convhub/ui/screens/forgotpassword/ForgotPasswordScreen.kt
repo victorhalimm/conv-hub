@@ -20,15 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
-import edu.bluejack23_2.convhub.ui.screens.forgotpassword.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.R
+import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 
 @AndroidEntryPoint
 class ForgotPasswordActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ConvHubTheme {
+            ConvHubTheme() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {

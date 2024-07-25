@@ -1,8 +1,11 @@
 package edu.bluejack23_2.convhub.data.repository
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import edu.bluejack23_2.convhub.data.model.Applicant
 import edu.bluejack23_2.convhub.data.model.Job
 import edu.bluejack23_2.convhub.data.model.User
@@ -17,6 +20,8 @@ class JobRepository {
     private val db = FirebaseFirestore.getInstance()
     private val userRepository = RepositoryModule.provideUserRepository()
     private var jobListener: ListenerRegistration? = null
+    private val storage = FirebaseStorage.getInstance()
+
     suspend fun fetchJobs(): List<Job> {
         return try {
             val jobDocuments = db.collection("job").get().await().documents
@@ -24,7 +29,8 @@ class JobRepository {
                 val job = document.toObject(Job::class.java)
                 if (job != null) {
                     val username = userRepository.fetchUsernameByUid(job.jobLister)
-                    job.copy(jobLister = username ?: job.jobLister)
+                    job.copy(jobLister = username ?: "" , id = document.id )
+
                 } else {
                     null
                 }
@@ -174,6 +180,28 @@ class JobRepository {
         }
     }
 
+    suspend fun finishJob(jobId: String, paymentProofUri: Uri) {
+        try {
+            val storageRef: StorageReference = storage.reference.child("payment_proof/$jobId.jpg")
+            val uploadTask = storageRef.putFile(paymentProofUri).await()
+            val downloadUrl = uploadTask.metadata?.reference?.downloadUrl?.await()
+
+            val jobRef = db.collection("job").document(jobId)
+            val jobSnapshot = jobRef.get().await()
+            val job = jobSnapshot.toObject(Job::class.java)
+
+            if (job != null && downloadUrl != null) {
+                val updatedJob = job.copy(status = "finished", paymentProofUrl = downloadUrl.toString())
+                jobRef.set(updatedJob).await()
+                Log.d("JobRepository", "Job successfully finished!")
+            } else {
+                Log.e("JobRepository", "Job not found or error in uploading image")
+            }
+        } catch (e: Exception) {
+            Log.e("JobRepository", "Error finishing job", e)
+        }
+    }
+
     suspend fun getTakenJobs(userId: String): List<Job> {
         val jobsCollection = db.collection("job")
 
@@ -229,6 +257,31 @@ class JobRepository {
 
     fun removeJobApplicantsListener() {
         jobListener?.remove()
+    }
+
+    suspend fun acceptJobApplicant(jobId: String, userId: String) {
+        try {
+            val jobRef = db.collection("job").document(jobId)
+            val jobSnapshot = jobRef.get().await()
+            val job = jobSnapshot.toObject(Job::class.java)
+
+            if (job != null) {
+                val applicants = job.applicants.toMutableList()
+                val applicantIndex = applicants.indexOfFirst { it.userId == userId }
+                if (applicantIndex != -1) {
+                    applicants[applicantIndex] = applicants[applicantIndex].copy(status = "accepted")
+                    val updatedJob = job.copy(applicants = applicants, jobTaker = userId)
+                    jobRef.set(updatedJob).await()
+                    Log.d("JobRepository", "User successfully accepted as job taker!")
+                } else {
+                    Log.e("JobRepository", "Applicant not found")
+                }
+            } else {
+                Log.e("JobRepository", "Job not found")
+            }
+        } catch (e: Exception) {
+            Log.e("JobRepository", "Error accepting job applicant", e)
+        }
     }
 
 }

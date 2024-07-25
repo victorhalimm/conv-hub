@@ -18,7 +18,8 @@ class UserRepository {
                 .document(user.uid)
                 .get()
                 .await()
-            documentSnapshot.toObject(User::class.java)
+            val newUser = documentSnapshot.toObject(User::class.java)
+            newUser?.copy(id = user.uid)
         }
 
     }

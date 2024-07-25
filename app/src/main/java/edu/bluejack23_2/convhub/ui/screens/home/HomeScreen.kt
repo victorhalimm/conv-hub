@@ -1,5 +1,6 @@
 package edu.bluejack23_2.convhub.ui.screens.home
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -29,6 +30,8 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import edu.bluejack23_2.convhub.data.model.User
 import edu.bluejack23_2.convhub.ui.events.UiEvent
+import edu.bluejack23_2.convhub.ui.screens.detailLister.DetailListerScreen
+import edu.bluejack23_2.convhub.ui.screens.detailTaker.DetailTakerScreen
 import edu.bluejack23_2.convhub.ui.screens.user.UserViewModel
 import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.theme.DarkBlue
@@ -70,7 +73,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LightGray)
+                .background(DarkBlue)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -121,7 +124,20 @@ fun HomeScreen(
                                         title = job.title,
                                         rating = job.rating.toString(),
                                         author = job.jobLister,
-                                        price = job.price.toString()
+                                        price = job.price.toString(),
+                                        onClick = {
+                                            if (currentUser?.username?.equals(job.jobLister) == true) {
+                                                val intent = Intent(context, DetailListerScreen::class.java).apply {
+                                                    putExtra("jobId", job.id)
+                                                }
+                                                context.startActivity(intent)
+                                            } else {
+                                                val intent = Intent(context, DetailTakerScreen::class.java).apply {
+                                                    putExtra("jobId", job.id)
+                                                }
+                                                context.startActivity(intent)
+                                            }
+                                        }
                                     )
                                 }
                             }
@@ -156,7 +172,22 @@ fun HomeScreen(
                                             title = job.title,
                                             rating = job.rating.toString(),
                                             author = job.jobLister,
-                                            price = job.price.toString()
+                                            price = job.price.toString(),
+                                            onClick = {
+
+                                                if (currentUser?.username?.equals(job.jobLister) == true) {
+                                                    val intent = Intent(context, DetailListerScreen::class.java).apply {
+                                                        putExtra("jobId", job.id)
+                                                    }
+                                                    context.startActivity(intent)
+                                                } else {
+                                                    val intent = Intent(context, DetailTakerScreen::class.java).apply {
+                                                        putExtra("jobId", job.id)
+                                                    }
+                                                    context.startActivity(intent)
+                                                }
+
+                                            }
                                         )
                                     }
                                 }
@@ -245,13 +276,15 @@ fun HomeScreenPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun JobItem(
     imageUrl: String,
     title: String,
     rating: String,
     author: String,
-    price: String
+    price: String,
+    onClick : () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -262,7 +295,8 @@ fun JobItem(
             width = 1.dp
         ),
         elevation = 0.dp,
-        shape = RoundedCornerShape(6.dp)
+        shape = RoundedCornerShape(6.dp),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -368,7 +402,7 @@ fun HomeScreenPreviewContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightGray)
+            .background(DarkBlue)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -402,7 +436,8 @@ fun HomeScreenPreviewContent() {
                             title = job.title,
                             rating = job.rating,
                             author = job.jobLister,
-                            price = job.price
+                            price = job.price,
+                            onClick = {}
                         )
                     }
                 }
@@ -435,7 +470,7 @@ fun TopSection(
     ) {
         Text(
             text = String.format("Hello, %s!", currentUser?.username),
-            color = Color.Black,
+            color = Color.White,
             fontSize = 20.sp,
             fontWeight = FontWeight(500),
             modifier = Modifier.padding(bottom = 12.dp)

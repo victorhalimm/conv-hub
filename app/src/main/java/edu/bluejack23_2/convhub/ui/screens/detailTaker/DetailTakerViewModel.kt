@@ -28,6 +28,9 @@ class DetailTakerViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> get() = _currentUser
+
     fun loadJobDetail(jobId: String) {
         viewModelScope.launch {
             val job = jobRepository.getJobById(jobId)
@@ -49,6 +52,13 @@ class DetailTakerViewModel @Inject constructor(
             } catch (e : Exception) {
                 _uiEvent.emit(UiEvent.ShowToast("Apply for job error!"))
             }
+        }
+    }
+
+     fun fetchCurrentUser() {
+        viewModelScope.launch {
+            val user = userRepository.fetchCurrentUser()
+            _currentUser.value = user
         }
     }
 

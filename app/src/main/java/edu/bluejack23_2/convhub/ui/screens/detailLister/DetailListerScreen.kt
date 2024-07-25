@@ -1,42 +1,55 @@
 package edu.bluejack23_2.convhub.ui.screens.detailLister
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import edu.bluejack23_2.convhub.R
 import edu.bluejack23_2.convhub.data.model.Job
 import edu.bluejack23_2.convhub.data.model.User
+import edu.bluejack23_2.convhub.ui.events.UiEvent
+import edu.bluejack23_2.convhub.ui.screens.joblisterprofile.JobListerProfileActivity
 import edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.JobTakerProfileActivity
 import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.theme.DarkBlue
+import kotlinx.coroutines.flow.collectLatest
 import java.util.Date
 
 @AndroidEntryPoint
@@ -61,18 +74,31 @@ class DetailListerScreen : ComponentActivity() {
 fun JobDetailScreen(jobId: String, viewModel: DetailListerViewModel = hiltViewModel()) {
     val jobDetail by viewModel.jobDetail.collectAsState()
     val applicants by viewModel.applicants.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(jobId) {
         viewModel.loadJobDetail(jobId)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is UiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     ConvHubTheme {
         LazyColumn {
             item {
                 jobDetail?.let { job ->
+                    val updatedJob = job.copy(id = jobId)
                     JobDetailContent(
-                        job,
-                        applicants
+                        updatedJob,
+                        applicants,
+                        viewModel
                     )
                 } ?: Text(text = "Loading...")
             }
@@ -81,9 +107,11 @@ fun JobDetailScreen(jobId: String, viewModel: DetailListerViewModel = hiltViewMo
 }
 
 @Composable
-fun JobDetailContent(job: Job, applicants: List<User>) {
+fun JobDetailContent(job: Job, applicants: List<User>, viewModel: DetailListerViewModel? = null) {
 
     val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -91,7 +119,7 @@ fun JobDetailContent(job: Job, applicants: List<User>) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(350.dp)
                 .background(DarkBlue)
         ) {
             Image(
@@ -157,11 +185,19 @@ fun JobDetailContent(job: Job, applicants: List<User>) {
                         color = Color.LightGray,
                         fontWeight = FontWeight(500)
                     )
-                    Text(
-                        text = job.jobLister,
-                        fontSize = 14.sp,
-                        color = DarkBlue,
-                        fontWeight = FontWeight(500)
+                    ClickableText(
+                        text = AnnotatedString(job.jobListerUsername),
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = DarkBlue,
+                            fontWeight = FontWeight(500)
+                        ),
+                        onClick = {
+                            val intent = Intent(context, JobListerProfileActivity::class.java).apply {
+                                putExtra("userId", job.jobLister)
+                            }
+                            context.startActivity(intent)
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -185,36 +221,198 @@ fun JobDetailContent(job: Job, applicants: List<User>) {
                 fontWeight = FontWeight(600)
             )
             Spacer(modifier = Modifier.height(6.dp))
-            applicants.forEach { applicant ->
-                ApplicationCard(applicant = applicant) {
-                    val intent = Intent(context, JobTakerProfileActivity::class.java).apply {
-                        putExtra("userId", it.id)
+
+            if (job.jobTaker.isNotEmpty()) {
+                val acceptedApplicant = applicants.find { it.id == job.jobTaker }
+
+                if (acceptedApplicant != null) {
+                    ApplicationCard(
+                        applicant = acceptedApplicant,
+                        onClick = {},
+                        isAccepted = true
+                    ) {
+                        val intent = Intent(context, JobTakerProfileActivity::class.java).apply {
+                            putExtra("userId", it.id)
+                        }
+                        context.startActivity(intent)
                     }
-                    context.startActivity(intent)
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                vertical = 14.dp
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                      if (job.status != "finished") showDialog = true;
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = if (job.status == "finished") Color.LightGray else DarkBlue
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text(text = if (job.status == "finished") "Job is Finished" else "Finish Job", color = Color.White, fontWeight = FontWeight(500), fontSize = 16.sp)
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(6.dp))
+            } else {
+                applicants.forEach { applicant ->
+                    ApplicationCard(applicant, onClick = {
+                        viewModel?.acceptJobRequest(job.id, applicant.id)
+                    }) {
+                        val intent = Intent(context, JobTakerProfileActivity::class.java).apply {
+                            putExtra("userId", it.id)
+                        }
+                        context.startActivity(intent)
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+            }
+
+        }
+
+        if (showDialog) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .zIndex(5f)
+            ) {
+                FinishJobDialog(
+                    onDismiss = { showDialog = false },
+                    onFinish = { uri ->
+                        viewModel?.finishJobRequest(job.id, uri)
+                        showDialog = false
+                    }
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun FinishJobDialog(onDismiss: () -> Unit, onFinish: (Uri) -> Unit) {
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        imageUri = uri
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colors.background,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(0.9f)
+                .fillMaxHeight(0.7f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(text = "Upload Payment Proof", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {
+                        launcher.launch("image/*")
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = DarkBlue,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "Select Image")
+                }
+
+                imageUri?.let {
+                    Image(
+                        painter = rememberImagePainter(data = it),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(Color.Gray)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Gray),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Cancel", color = Color.White)
+                    }
+                    Button(
+                        onClick = {
+                            imageUri?.let { onFinish(it) }
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = DarkBlue),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Finish", color = Color.White)
+                    }
+                }
             }
         }
     }
 }
 
+
+
 @Composable
-fun ApplicationCard(applicant: User, onClick: (User) -> Unit) {
-    Column(
+fun ApplicationCard(applicant: User, isAccepted: Boolean = false, onClick: () -> Unit, onClickApplicant : (User) -> Unit) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = Color.LightGray,
+                color = if (isAccepted) Color.Green else Color.LightGray,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(12.dp)
-            .clickable { onClick(applicant) },  // Add clickable modifier
+            .clickable { onClickApplicant(applicant) }, 
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = applicant.username, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = applicant.email)
-        Spacer(modifier = Modifier.height(4.dp))
+        Column {
+            Text(text = applicant.username, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = applicant.email, color = Color.Gray)
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+        if (!isAccepted) {
+            Button(
+                onClick = onClick,
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    backgroundColor = DarkBlue
+                ),
+                shape = CircleShape,
+                modifier = Modifier.size(28.dp),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Check Icon",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
     }
 }
 
@@ -276,6 +474,7 @@ fun JobDetailScreenPreview() {
         )
     )
     ConvHubTheme {
-       JobDetailContent(mockJob, dummyUsers)
+        JobDetailContent(mockJob, dummyUsers, null)
     }
 }
+

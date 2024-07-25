@@ -68,11 +68,12 @@ class DetailTakerScreen : ComponentActivity() {
 @Composable
 fun JobDetailScreen(jobId: String, viewModel: DetailTakerViewModel = hiltViewModel()) {
     val jobDetail by viewModel.jobDetail.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(jobId) {
         viewModel.loadJobDetail(jobId)
-
+        viewModel.fetchCurrentUser()
     }
 
     LaunchedEffect(Unit) {
@@ -91,7 +92,7 @@ fun JobDetailScreen(jobId: String, viewModel: DetailTakerViewModel = hiltViewMod
         ) {
             item {
                 jobDetail?.let { job ->
-                    JobDetailContent(job, viewModel)
+                    JobDetailContent(job, viewModel, currentUser)
                 } ?: Text(text = "Loading...")
             }
         }
@@ -99,8 +100,7 @@ fun JobDetailScreen(jobId: String, viewModel: DetailTakerViewModel = hiltViewMod
 }
 
 @Composable
-fun JobDetailContent(job: Job, viewModel: DetailTakerViewModel? = null) {
-    val userId = "XfLfUtPNZGX1W7L0mtOv1VlzlkF3"
+fun JobDetailContent(job: Job, viewModel: DetailTakerViewModel? = null, currentUser: User?) {    
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -237,21 +237,26 @@ fun JobDetailContent(job: Job, viewModel: DetailTakerViewModel? = null) {
                     Text(text = "From", fontWeight = FontWeight(600), fontSize = 16.sp)
                     Text(text = "$${job.price},00", fontSize = 18.sp, fontWeight = FontWeight(400))
                 }
-                Button(
-                    onClick = {
-                        viewModel?.applyJob(job.id, userId)
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = DarkBlue,
-                        contentColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(16.dp),
-                    contentPadding = PaddingValues(
-                        horizontal = 28.dp,
-                        vertical = 10.dp
-                    )
-                ) {
-                    Text(text = "Apply", fontSize = 16.sp)
+                
+                if (job.jobTaker.isEmpty() && currentUser != null) {
+                    Button(
+                        onClick = {
+                            viewModel?.applyJob(job.id, currentUser.id)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = DarkBlue,
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(
+                            horizontal = 28.dp,
+                            vertical = 10.dp
+                        )
+                    ) {
+                        Text(text = "Apply", fontSize = 16.sp)
+                    }
+                } else {
+                    Text(text = "Job is already Taken!", fontSize = 16.sp, color = Color.Red)
                 }
             }
         }
@@ -335,6 +340,6 @@ fun JobDetailScreenPreview() {
         )
     )
     ConvHubTheme {
-        JobDetailContent(mockJob )
+        JobDetailContent(mockJob, null, null)
     }
 }

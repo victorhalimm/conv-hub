@@ -2,6 +2,7 @@ package edu.bluejack23_2.convhub.ui.theme.screens
 
 
 import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import edu.bluejack23_2.convhub.di.RepositoryModule
 import edu.bluejack23_2.convhub.ui.CreateTaskActivity
+import edu.bluejack23_2.convhub.ui.screens.detailLister.DetailListerScreen
 import edu.bluejack23_2.convhub.ui.screens.jobdetail.JobDetailViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +74,15 @@ fun ActiveTaskScreen(
                         backgroundColor = Color.LightGray
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .clickable {
+                                    val intent = Intent(context, DetailListerScreen::class.java).apply {
+                                        putExtra("jobId", job.id)
+                                    }
+                                    context.startActivity(intent)
+                                }
+
                         ) {
                             Text(text = job.title, fontSize = 20.sp, color = Color.Blue)
                             Text(text = "Price: $${job.price}", color = Color(0xFF6699CC))

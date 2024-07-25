@@ -1,6 +1,7 @@
 package edu.bluejack23_2.convhub.ui.screens.detailLister
 
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,8 +13,11 @@ import edu.bluejack23_2.convhub.data.model.Job
 import edu.bluejack23_2.convhub.data.model.User
 import edu.bluejack23_2.convhub.data.repository.JobRepository
 import edu.bluejack23_2.convhub.data.repository.UserRepository
+import edu.bluejack23_2.convhub.ui.events.UiEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +32,9 @@ class DetailListerViewModel @Inject constructor(
 
     private val _applicants = MutableStateFlow<List<User>>(emptyList())
     val applicants: StateFlow<List<User>> get() = _applicants
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     fun loadJobDetail(jobId: String) {
         viewModelScope.launch {
@@ -47,9 +54,36 @@ class DetailListerViewModel @Inject constructor(
         }
     }
 
+    fun acceptJobRequest(jobId : String, userId : String) {
+        viewModelScope.launch {
+            try {
+                jobRepository.acceptJobApplicant(jobId, userId)
+                _uiEvent.emit(UiEvent.ShowToast("Successfully accept a job taker!"))
+
+                loadJobDetail(jobId)
+            } catch (e : Exception) {
+                _uiEvent.emit(UiEvent.ShowToast("Error in accepting a job taker!"))
+            }
+        }
+    }
+
+    fun finishJobRequest(jobId: String, paymentProofUri: Uri) {
+        viewModelScope.launch {
+            try {
+                jobRepository.finishJob(jobId, paymentProofUri)
+                _uiEvent.emit(UiEvent.ShowToast("Job successfully finished!"))
+                loadJobDetail(jobId)
+            } catch (e: Exception) {
+                _uiEvent.emit(UiEvent.ShowToast("Error in finishing the job!"))
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         jobRepository.removeJobApplicantsListener()
     }
+
+
 
 }

@@ -38,6 +38,11 @@
             android:label="@string/title_activity_detail_lister_screen"
             android:theme="@style/Theme.ConvHub" />
         <activity
+            android:name=".ui.screens.detailTaker.DetailTakerScreen"
+            android:exported="false"
+            android:label="@string/title_activity_detail_lister_screen"
+            android:theme="@style/Theme.ConvHub" />
+        <activity
             android:name=".ui.CreateTaskActivity"
             android:exported="false"
             android:label="@string/title_activity_job_detail_screen"
@@ -66,7 +71,7 @@
             android:exported="false"
             android:theme="@style/Theme.ConvHub" />
         <activity
-            android:name=".ui.screens.detailTaker.DetailTakerScreen"
+            android:name=".LandingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

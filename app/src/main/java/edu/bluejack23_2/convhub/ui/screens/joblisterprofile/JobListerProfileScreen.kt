@@ -30,9 +30,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
-import edu.bluejack23_2.convhub.ui.screens.joblisterprofile.ui.theme.ConvHubTheme
-import edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.JobTakerProfileScreen
 import edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.JobTakerProfileViewModel
+import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.theme.screens.JobCard
 import edu.bluejack23_2.convhub.ui.viewmodel.ProfileViewModel
 
@@ -42,7 +41,7 @@ class JobListerProfileActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         val userId = intent.getStringExtra("userId") ?: return
         setContent {
-            edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.ui.theme.ConvHubTheme {
+            ConvHubTheme() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background

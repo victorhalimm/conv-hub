@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.bluejack23_2.convhub.data.model.Job
+import edu.bluejack23_2.convhub.data.model.User
 import edu.bluejack23_2.convhub.data.repository.JobRepository
 import edu.bluejack23_2.convhub.data.repository.UserRepository
 import edu.bluejack23_2.convhub.ui.events.UiEvent
@@ -20,8 +21,12 @@ class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+
     private val _jobState = MutableStateFlow<List<Job>>(emptyList())
     val jobState = _jobState.asStateFlow()
+
+    private val _user = MutableStateFlow<User?>(null)
+    val user = _user.asStateFlow()
 
     private val _searchQuery = MutableStateFlow(TextFieldValue(""))
     val searchQuery = _searchQuery.asStateFlow()
@@ -38,6 +43,7 @@ class HomeViewModel @Inject constructor(
     init {
         fetchJobs()
         fetchPreferredFields()
+        getCurrentUser()
     }
 
     private fun fetchJobs() {
@@ -45,6 +51,17 @@ class HomeViewModel @Inject constructor(
             try {
                 val jobs = jobRepository.fetchJobs()
                 _jobState.value = jobs
+            } catch (e: Exception) {
+                Log.e("JobRepository", "Error fetching jobs", e)
+            }
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            try {
+                val user = userRepository.fetchCurrentUser()
+                _user.value = user
             } catch (e: Exception) {
                 Log.e("JobRepository", "Error fetching jobs", e)
             }

@@ -7,7 +7,7 @@ data class Job(
     val address: String = "",
     val categories: List<String> = emptyList(),
     val imageUris: List<String> = emptyList(),
-    val jobTaker: String? = null,
+    val jobTaker: String = "",
     val jobLister: String = "",
     val price: Int = 0,
     val status: String = "",
@@ -17,7 +17,8 @@ data class Job(
     val applicants: List<Applicant> = emptyList(),
     val posted_at: Date = Date(),
     val taken_at: Date = Date(),
-    val jobListerUsername: String = ""
+    val jobListerUsername: String = "",
+    val paymentProofUrl : String = ""
 ) {
     // No-argument constructor for Firestore
     constructor() : this(
@@ -25,7 +26,7 @@ data class Job(
         address = "",
         categories = emptyList(),
         imageUris = emptyList(),
-        jobTaker = null,
+        jobTaker = "",
         jobLister = "",
         price = 0,
         status = "",
@@ -35,6 +36,7 @@ data class Job(
         applicants = emptyList(),
         posted_at = Date(),
         taken_at = Date(),
-        jobListerUsername = ""
+        jobListerUsername = "",
+        paymentProofUrl = ""
     )
 }

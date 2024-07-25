@@ -34,7 +34,7 @@ import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import edu.bluejack23_2.convhub.ui.CreateTaskActivity
 import edu.bluejack23_2.convhub.ui.screens.jobdetail.JobDetailScreen
-import edu.bluejack23_2.convhub.ui.screens.jobtakerprofile.ui.theme.ConvHubTheme
+import edu.bluejack23_2.convhub.ui.theme.ConvHubTheme
 import edu.bluejack23_2.convhub.ui.theme.screens.JobCard
 import edu.bluejack23_2.convhub.ui.viewmodel.ProfileViewModel
 import java.text.SimpleDateFormat
@@ -46,7 +46,7 @@ class JobTakerProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val userId = intent.getStringExtra("userId") ?: return
         setContent {
-            ConvHubTheme {
+            ConvHubTheme() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
