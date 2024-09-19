@@ -63,7 +63,7 @@ class JobDetailViewModel @Inject constructor(
     fun fetchJobDetails() {
         viewModelScope.launch {
             try {
-                val document = firestore.collection("job").document("jehoCTfD3EBWJ5YIYj78").get().await()
+                val document = firestore.collection("job").document("kNp8PlflketMV9sFstKt").get().await()
                 val job = document.toObject(Job::class.java)
                 _jobState.value = job
 
